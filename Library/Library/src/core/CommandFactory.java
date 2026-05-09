@@ -20,6 +20,9 @@ public class CommandFactory {
         commands.put(CommandsIndex.HELP,new HelpCommand());
         commands.put(CommandsIndex.LOGOUT, new LogoutCommand(libraryData));
         commands.put(CommandsIndex.BOOKS_ADD, new BooksAddCommand(libraryData));
+        commands.put(CommandsIndex.SAVE,new SaveCommand(libraryData, fileActions));
+        commands.put(CommandsIndex.SAVE_AS,new SaveAsCommand(libraryData, fileActions));
+        commands.put(CommandsIndex.OPEN,new OpenCommand(libraryData, fileActions));
     }
 
     public Command getCommand(CommandsIndex index) {
