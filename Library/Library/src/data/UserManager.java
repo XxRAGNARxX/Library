@@ -14,7 +14,9 @@ public class UserManager implements UserActions, Serializable {
 
     public UserManager() {
         this.users = new ArrayList<>();
+        this.users.add(new User("admin", "i<3Java", Role.ADMIN));
         this.users.add(new User("Georgi", "1234", Role.ADMIN));
+        this.users.add(new User("G", "1", Role.ADMIN));//for fast login
 
     }
 
