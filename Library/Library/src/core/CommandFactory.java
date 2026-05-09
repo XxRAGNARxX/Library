@@ -1,0 +1,26 @@
+package core;
+
+import commands.Command;
+import commands.CommandsIndex;
+import commands.impl.*;
+import data.interfaces.FileActions;
+import data.interfaces.LibraryData;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class CommandFactory {
+    private final Map<CommandsIndex, Command> commands;
+
+    public CommandFactory(LibraryData libraryData, FileActions fileActions) {
+        this.commands = new HashMap<>();
+
+        commands.put(CommandsIndex.LOGIN, new LoginCommand(libraryData));
+        commands.put(CommandsIndex.BOOKS_ALL, new BooksAllCommand(libraryData));
+        commands.put(CommandsIndex.HELP,new HelpCommand());
+    }
+
+    public Command getCommand(CommandsIndex index) {
+        return commands.get(index);
+    }
+}

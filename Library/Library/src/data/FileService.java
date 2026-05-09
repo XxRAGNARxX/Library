@@ -7,7 +7,7 @@ import exceptions.FileException;
 import java.io.*;
 
 public class FileService implements FileActions {
-    private File file;
+    private File currentFile;
 
     public FileService() {}
 
@@ -18,61 +18,39 @@ public class FileService implements FileActions {
         }
 
         if (file.exists()) {
-            this.file = file;
-
-            try (FileInputStream fis = new FileInputStream(file);
-                 ObjectInputStream ois = new ObjectInputStream(fis)) {
-
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
                 libraryData.setLibraryData((LibraryData) ois.readObject());
+                this.currentFile = file;
                 return true;
-
             } catch (ClassNotFoundException | IOException e) {
-                this.file = null;
-                throw new FileException("Error loading file " + e.getMessage());
+                this.currentFile = null;
+                throw new FileException("Error loading file" + e.getMessage());
             }
         } else {
-            try {
-                file.createNewFile();
-                this.file = file;
-                write(libraryData, file);
-                return true;
-            } catch (IOException e) {
-                throw new FileException("Could not create new file " + e.getMessage());
-            }
+            this.currentFile = file;
+            return write(libraryData, file);
         }
     }
 
     @Override
     public void close(LibraryData libraryData) {
         if (!isOpen()) {
-            throw new FileException("There is no open file to close");
+            throw new FileException("There is no open file to close.");
         }
-        this.file = null;
+        this.currentFile = null;
         libraryData.setLibraryData(new LibrarySystem());
     }
 
     @Override
     public boolean write(LibraryData libraryData, File file) {
-        if (file == null) {
-            if (this.file != null) {
-                file = this.file;
-            } else {
-                throw new FileException("There is no open file to save to.");
-            }
+        File fileToWrite = (file != null) ? file : this.currentFile;
+        if (fileToWrite == null) {
+            throw new FileException("There is no open file to save to.");
         }
-
-        try {
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            this.file = file;
-
-            try (FileOutputStream fos = new FileOutputStream(file);
-                 ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-
-                oos.writeObject(libraryData);
-                return true;
-            }
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileToWrite))) {
+            oos.writeObject(libraryData);
+            this.currentFile = fileToWrite;
+            return true;
         } catch (IOException e) {
             throw new FileException("Could not save file: " + e.getMessage());
         }
@@ -80,11 +58,11 @@ public class FileService implements FileActions {
 
     @Override
     public boolean isOpen() {
-        return (file != null && file.exists() && file.isFile());
+        return currentFile != null && currentFile.exists() && currentFile.isFile();
     }
 
     @Override
     public File getFile() {
-        return file;
+        return currentFile;
     }
 }
