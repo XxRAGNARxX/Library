@@ -70,7 +70,7 @@ public class Engine {
                 System.out.println("Error: " + e.getMessage());
             }
         } else {
-            System.out.println("Command is recognized but not yet implemented.");
+            System.out.println("Command is recognized but not yet implemented.");//helps if i forget to implement the command
         }
     }
 }
