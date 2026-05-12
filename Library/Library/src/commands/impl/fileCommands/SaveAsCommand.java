@@ -1,4 +1,4 @@
-package commands.impl;
+package commands.impl.fileCommands;
 
 import commands.Command;
 import data.interfaces.FileActions;

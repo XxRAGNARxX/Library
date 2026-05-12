@@ -1,4 +1,4 @@
-package commands.impl;
+package commands.impl.userCommands;
 
 import commands.Command;
 import data.interfaces.LibraryData;
