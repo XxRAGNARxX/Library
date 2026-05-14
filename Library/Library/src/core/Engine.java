@@ -2,12 +2,9 @@ package core;
 
 import commands.Command;
 import commands.CommandsIndex;
-import data.FileService;
-import data.LibrarySystem;
 import data.interfaces.FileActions;
 import data.interfaces.LibraryData;
 
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Engine {
@@ -16,16 +13,16 @@ public class Engine {
     private final FileActions fileActions;
     private final CommandFactory commandFactory;
 
-    public Engine() {
+    public Engine(LibraryData libraryData, FileActions fileActions) {
         this.isRunning = true;
-        this.libraryData = new LibrarySystem();
-        this.fileActions = new FileService();
+        this.libraryData = libraryData;
+        this.fileActions = fileActions;
         this.commandFactory = new CommandFactory(libraryData, fileActions);
     }
 
     public void run() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println(" Welcome to Library System");
+        System.out.println("Welcome to Library System");
 
         while (isRunning) {
             System.out.print("> ");
@@ -42,7 +39,9 @@ public class Engine {
         String[] tokens = input.split("\\s+");
         String commandKey = tokens[0];
 
-        if (tokens.length > 1 && (tokens[0].equalsIgnoreCase("books") || tokens[0].equalsIgnoreCase("users") || tokens[0].equalsIgnoreCase("save"))) {
+        if (tokens.length > 1 && (tokens[0].equalsIgnoreCase("books")
+                || tokens[0].equalsIgnoreCase("users")
+                || tokens[0].equalsIgnoreCase("save"))) {
             commandKey = tokens[0] + " " + tokens[1];
         }
 
