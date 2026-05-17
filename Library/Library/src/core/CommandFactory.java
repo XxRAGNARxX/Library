@@ -18,9 +18,25 @@ import data.interfaces.LibraryData;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Factory that creates and caches all {@link Command} instances.
+ *
+ * <p>Commands are instantiated once at startup and stored in a {@link HashMap}
+ * keyed by {@link CommandsIndex}. The {@link Engine} calls {@link #getCommand}
+ * on every user input; no new objects are allocated per-request.
+ *
+ * <p>This class is the single place where command implementations are wired to
+ * their index constants, making it straightforward to add or replace commands.
+ */
 public class CommandFactory {
     private final Map<CommandsIndex, Command> commands;
 
+    /**
+     * Constructs the factory and eagerly instantiates every registered command.
+     *
+     * @param libraryData shared in-memory library state passed to commands that need it
+     * @param fileActions shared file service passed to file-related commands
+     */
     public CommandFactory(LibraryData libraryData, FileActions fileActions) {
         this.commands = new HashMap<>();
 
@@ -39,9 +55,7 @@ public class CommandFactory {
         commands.put(CommandsIndex.BOOKS_SORT,new BooksSortCommand(libraryData));
         commands.put(CommandsIndex.USERS_ADD,new UsersAddCommand(libraryData));
         commands.put(CommandsIndex.USERS_REMOVE,new UsersRemoveCommand(libraryData));
-
     }
-
     public Command getCommand(CommandsIndex index) {
         return commands.get(index);
     }

@@ -9,6 +9,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Default in-memory implementation of {@link UserActions}.
+ *
+ * <p>Users are stored in an {@link ArrayList}. Three default accounts are
+ * seeded at construction time for development and testing convenience.
+ * The {@code "admin"} account is protected and cannot be removed.
+ *
+ * <p>Username lookups are case-insensitive. Instances are serialized as part
+ * of the library data file.
+ */
 public class UserManager implements UserActions, Serializable {
     private List<User> users;
 
@@ -20,6 +30,11 @@ public class UserManager implements UserActions, Serializable {
 
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws UserException if a user with the same username already exists
+     */
     @Override
     public void addUser(User user) {
         if (userExists(user.getUsername())) {
@@ -28,6 +43,11 @@ public class UserManager implements UserActions, Serializable {
         users.add(user);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws UserException if the user does not exist or is the protected default admin
+     */
     @Override
     public void removeUser(String username) {
         User user = getUserByUsername(username);
@@ -37,6 +57,13 @@ public class UserManager implements UserActions, Serializable {
         users.remove(user);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Comparison is case-insensitive.
+     *
+     * @throws UserException if no user with the given username exists
+     */
     @Override
     public User getUserByUsername(String username) {
         for (User user : users) {
@@ -47,6 +74,11 @@ public class UserManager implements UserActions, Serializable {
         throw new UserException("User not found!");
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Comparison is case-insensitive.
+     */
     @Override
     public boolean userExists(String username) {
         for (User user : users) {

@@ -6,11 +6,37 @@ import exceptions.FileException;
 
 import java.io.*;
 
+/**
+ * Default implementation of {@link FileActions} using Java object serialization.
+ *
+ * <p>Maintains a reference to the currently open {@link File}. The system
+ * enforces a single-file-at-a-time policy: calling {@link #open} while a file
+ * is already open throws a {@link FileException}.
+ *
+ * <p>On {@link #close} the in-memory state is reset to a fresh {@link LibrarySystem}.
+ * The logged-in user is marked {@code transient} in {@link LibrarySystem} so it is
+ * never persisted to disk.
+ */
 public class FileService implements FileActions {
     private File currentFile;
+    /**
+     * Constructs a {@code FileService} with no file open.
+     */
 
-    public FileService() {}
 
+    public FileService() {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>If the file exists it is deserialized and its data replaces the current
+     * in-memory state. If the file does not exist an empty library is written to
+     * create it.
+     *
+     * @throws FileException if a file is already open or an I/O error occurs
+     */
     @Override
     public boolean open(LibraryData libraryData, File file) {
         if (isOpen()) {

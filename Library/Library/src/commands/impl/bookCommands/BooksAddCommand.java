@@ -8,11 +8,37 @@ import models.User;
 
 import java.util.Scanner;
 
+/**
+ * Implements the {@code books add} command.
+ *
+ * <p>Interactively prompts the admin user for all required book fields
+ * (ISBN, title, author, genre, description, year, rating, and optional tags)
+ * then adds the resulting {@link Book} to the catalogue.
+ *
+ * <p>Requires the currently logged-in user to hold the {@code ADMIN} role.
+ */
 public class BooksAddCommand implements Command {
     final LibraryData libraryData;
+
+    /**
+     * Constructs the command with the shared library state.
+     *
+     * @param library the in-memory library state
+     */
     public BooksAddCommand(LibraryData library) {
         this.libraryData = library;
     }
+
+    /**
+     * Executes the {@code books add} command.
+     *
+     * <p>Returns an error message if the user is not logged in or is not an admin.
+     * On success, prompts line-by-line for each book field and delegates to
+     * {@link data.interfaces.BookActions#addBook(Book)}.
+     *
+     * @param args token array (not used beyond the command word)
+     * @return success or error message
+     */
     @Override
     public String execute(String[] args) {
         User currentUser = libraryData.getLoggedInUser();

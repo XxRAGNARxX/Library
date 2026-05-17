@@ -8,13 +8,31 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Default in-memory implementation of {@link BookActions}.
+ *
+ * <p>Books are stored in an {@link ArrayList}. The list order reflects the order
+ * in which books were added, unless a sort has been performed.
+ *
+ * <p>Sorting is implemented with a custom recursive merge sort rather than the
+ * standard library sort, keeping the algorithm visible for academic review.
+ *
+ * <p>Instances are serialized as part of the library data file.
+ */
 public class BookManager implements BookActions, Serializable {
     private List<Book> books;
-
+    /**
+     * Constructs an empty book manager.
+     */
     public BookManager() {
         this.books = new ArrayList<>();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws BookException if a book with the same ISBN is already in the catalogue
+     */
     @Override
     public void addBook(Book book) {
         for (Book b : books) {
@@ -25,12 +43,22 @@ public class BookManager implements BookActions, Serializable {
         books.add(book);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws BookException if no book with {@code isbn} exists
+     */
     @Override
     public void removeBook(String isbn) {
         Book book = getBookByIsbn(isbn);
         books.remove(book);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws BookException if no book with {@code isbn} exists
+     */
     @Override
     public Book getBookByIsbn(String isbn) {
         for (Book book : books) {
@@ -73,12 +101,25 @@ public class BookManager implements BookActions, Serializable {
         }
         return result;
     }
-
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Delegates to {@link #mergeSort} which sorts the list in-place.
+     *
+     * @throws BookException if {@code option} is not a supported sort key
+     */
     @Override
     public void sortBooks(String option, boolean ascending) {
         mergeSort(this.books, option, ascending);
     }
 
+    /**
+     * Recursively splits and sorts {@code list} in-place using merge sort.
+     *
+     * @param list   the sublist to sort (modified in place)
+     * @param option sort key
+     * @param asc    {@code true} for ascending order
+     */
     private void mergeSort(List<Book> list, String option, boolean asc) {
         if (list.size() <= 1) return;
 
@@ -92,6 +133,15 @@ public class BookManager implements BookActions, Serializable {
         merge(list, left, right, option, asc);
     }
 
+    /**
+     * Merges two sorted halves back into {@code result}.
+     *
+     * @param result the target list (same size as left + right)
+     * @param left   sorted left half
+     * @param right  sorted right half
+     * @param option sort key
+     * @param asc    {@code true} for ascending order
+     */
     private void merge(List<Book> result, List<Book> left, List<Book> right, String option, boolean asc) {
         int i = 0, j = 0, k = 0;
 
@@ -106,6 +156,17 @@ public class BookManager implements BookActions, Serializable {
         while (i < left.size()) result.set(k++, left.get(i++));
         while (j < right.size()) result.set(k++, right.get(j++));
     }
+
+    /**
+     * Compares two books according to the given sort key and direction.
+     *
+     * @param b1     first book
+     * @param b2     second book
+     * @param option sort key ({@code "title"}, {@code "author"}, {@code "year"}, or {@code "rating"})
+     * @param asc    {@code true} if ascending order is desired
+     * @return {@code true} if {@code b1} should come before {@code b2}
+     * @throws BookException if {@code option} is not a recognised sort key
+     */
 
     private boolean compareBooks(Book b1, Book b2, String option, boolean asc) {
         int cmp = 0;

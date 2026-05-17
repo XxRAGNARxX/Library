@@ -8,12 +8,23 @@ import models.User;
 
 import java.io.Serializable;
 
+/**
+ * Concrete implementation of {@link LibraryData} that aggregates the book and
+ * user subsystems and manages the current authentication session.
+ *
+ * <p>{@code LibrarySystem} acts as the root serializable object persisted to disk.
+ * The {@code loggedInUser} field is marked {@code transient} so that active
+ * sessions are never written to the file — users must always re-authenticate
+ * after opening a saved file.
+ */
 public class LibrarySystem implements LibraryData, Serializable {
     private BookActions bookManager;
     private UserActions userManager;
-
     private transient User loggedInUser;// not  be saved to the file when serial...
-
+    /**
+     * Constructs a default library system with an empty book catalogue and
+     * the default set of users provided by {@link UserManager}.
+     */
     public LibrarySystem() {
         this.bookManager = new BookManager();
         this.userManager = new UserManager();

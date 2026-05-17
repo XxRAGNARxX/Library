@@ -2,7 +2,13 @@ package commands.impl;
 
 import commands.Command;
 
+/**
+ * Prints the full list of commands supported by the Library Management System.
+ *
+ * <p>This command requires no authentication and accepts no arguments.
+ */
 public class HelpCommand implements Command {
+
 
     @Override
     public String execute(String[] args) {

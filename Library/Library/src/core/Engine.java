@@ -7,11 +7,36 @@ import data.interfaces.LibraryData;
 
 import java.util.Scanner;
 
+/**
+ * Main read-eval-print loop (REPL) of the Library Management System.
+ *
+ * <p>The engine reads lines from {@code System.in}, resolves each line to a
+ * {@link CommandsIndex} constant via {@link CommandsIndex#fromString}, retrieves
+ * the matching {@link Command} from the {@link CommandFactory}, executes it, and
+ * prints the result.
+ *
+ * <p>Compound commands ({@code books}, {@code users}, {@code save as}) are
+ * recognised by joining the first two tokens before the lookup.
+ *
+ * <p>{@code EXIT} is handled directly in the loop without delegating to a
+ * command object, because it must stop the loop itself.
+ */
 public class Engine {
     private boolean isRunning;
     private final LibraryData libraryData;
     private final FileActions fileActions;
     private final CommandFactory commandFactory;
+
+    /**
+     * Constructs an engine with the supplied data and file services.
+     *
+     * <p>The {@link CommandFactory} is created here, receiving the same
+     * dependencies so that commands can access them without the engine
+     * acting as a service locator.
+     *
+     * @param libraryData the in-memory library state (injected via DIP)
+     * @param fileActions the file persistence service (injected via DIP)
+     */
 
     public Engine(LibraryData libraryData, FileActions fileActions) {
         this.isRunning = true;
@@ -20,6 +45,12 @@ public class Engine {
         this.commandFactory = new CommandFactory(libraryData, fileActions);
     }
 
+    /**
+     * Starts the interactive REPL and blocks until the user types {@code exit}.
+     *
+     * <p>Empty input lines are silently skipped. All command exceptions are
+     * caught here and their messages printed so the loop never crashes.
+     */
     public void run() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to Library System");
@@ -35,6 +66,14 @@ public class Engine {
         scanner.close();
     }
 
+    /**
+     * Parses a single input line, resolves the command, and executes it.
+     *
+     * <p>For the {@code books}, {@code users}, and {@code save} families the
+     * first two tokens are joined to form the lookup key (e.g. {@code "books all"}).
+     *
+     * @param input a non-empty, trimmed input line from the user
+     */
     private void processInput(String input) {
         String[] tokens = input.split("\\s+");
         String commandKey = tokens[0];

@@ -1,5 +1,10 @@
 package commands;
 
+/**
+ * Canonical set of commands recognised by the Library Management System.
+ * factory method converts a raw command key (as typed by the user) to the
+ *
+ */
 public enum CommandsIndex {
     HELP,
     EXIT,
